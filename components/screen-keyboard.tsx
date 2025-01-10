@@ -16,7 +16,6 @@ const ScreenKeyboard = () => {
   };
 
   return (
-
     <Keyboard
       layout={iosLayout}
       display={iosDisplay}
