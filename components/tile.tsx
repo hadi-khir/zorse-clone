@@ -15,7 +15,7 @@ const Tile = ({
 }: TileProps) => {
     return (
         <div
-            className={`w-12 h-12 flex items-center justify-center ${backgroundColor} ${borderColor} ${textColor} border-2`}
+            className={`w-12 h-12 flex items-center justify-center ${backgroundColor} ${borderColor} ${textColor} border-2 rounded-lg`}
             aria-hidden={!isVisible}>
             <span
                 className={`text-lg font-bold`}
