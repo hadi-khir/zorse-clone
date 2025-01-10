@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 export default function Home() {
 
   return (
-    <>
+    <main>
       <section id="title">
         <div className="flex mx-4 my-4 md:mx-32 md:mt-32 md:mb-4 justify-between items-center">
           <div className="flex gap-4">
@@ -35,6 +35,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-    </>
+    </main>
   );
 }
