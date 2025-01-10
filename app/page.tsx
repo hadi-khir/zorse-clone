@@ -1,11 +1,12 @@
+
 import DateDisplay from "@/components/date";
 import { ModeToggle } from "@/components/mode-toggle";
 import PhraseDisplay from "@/components/phrase-display";
 import RevealDisplay from "@/components/reveal-display";
+import ScreenKeyboard from "@/components/screen-keyboard";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
-
   return (
     <main>
       <section id="title">
@@ -32,6 +33,7 @@ export default function Home() {
                 Enter a Phrase
               </Button>
             </div>
+            <ScreenKeyboard />
           </div>
         </div>
       </section>
