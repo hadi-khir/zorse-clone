@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Tile from "./tile";
 import { fetchPuzzleSolution, PuzzleSolution } from "@/lib/data";
-import { Button } from "./ui/button";
+import RevealDisplay from "./reveal-display";
 
 interface SelectedTile {
     letter: string;
@@ -11,11 +11,22 @@ interface SelectedTile {
     wordIndex: number;
 }
 
+interface Reveals {
+    value: number;
+    used: boolean;
+}
+
+const initialReveals: Reveals[] = Array.from({ length: 5 }, (_, i) => ({
+    value: i,
+    used: false
+}));
+
 const PhraseDisplay = () => {
 
     const [solution, setSolution] = useState<String>("");
     const [revealedLetters, setRevealedLetters] = useState<string[]>([]);
     const [selectedTile, setSelectedTile] = useState<SelectedTile | null>(null);
+    const [reveals, setReveals] = useState<Reveals[]>(initialReveals);
 
     useEffect(() => {
 
@@ -36,9 +47,24 @@ const PhraseDisplay = () => {
     }
 
     const handleRevealClick = () => {
+
         if (selectedTile) {
+            
             setRevealedLetters([...revealedLetters, selectedTile.letter.toUpperCase()]);
             setSelectedTile(null);
+
+            updateReveals();
+        }
+    }
+
+    const updateReveals = () => {
+
+        const firstUnusedRevealIndex = reveals.findIndex(reveal => !reveal.used);
+        if (firstUnusedRevealIndex !== -1) {
+            const updatedReveals = reveals.map((reveal, index) =>
+                index === firstUnusedRevealIndex ? { ...reveal, used: true } : reveal
+            );
+            setReveals(updatedReveals);
         }
     }
 
@@ -49,36 +75,23 @@ const PhraseDisplay = () => {
                     <div key={wordIndex} className="flex justify-center gap-1">
                         {word.split("").map((letter, letterIndex) => {
                             const isRevealed = revealedLetters.includes(letter.toUpperCase());
-                            const isSelected = selectedTile?.letterIndex === letterIndex && selectedTile?.wordIndex === wordIndex;
-                            
+                            const isSelected = !isRevealed &&
+                                selectedTile?.letterIndex === letterIndex && selectedTile?.wordIndex === wordIndex;
+
                             return (
                                 <Tile
-                                  key={letterIndex}
-                                  letter={letter}
-                                  isVisible={isRevealed}
-                                  isSelected={isSelected}
-                                  onClick={() => handleTileClick(letter, letterIndex, wordIndex)}
+                                    key={letterIndex}
+                                    letter={letter}
+                                    isVisible={isRevealed}
+                                    isSelected={isSelected}
+                                    onClick={() => handleTileClick(letter, letterIndex, wordIndex)}
                                 />
-                              );
+                            );
                         })}
                     </div>
                 ))}
             </div>
-            <div id="revealContainer" className="grid grid-cols-2 gap-4 items-center">
-                <div id="revealsUsed" className="grid grid-cols-1 justify-items-center">
-                    <span>Reveals used:</span>
-                    <div className="grid grid-cols-5 gap-1">
-                        <span className="rounded-full w-3 h-3 border-black dark:border-white border-2" />
-                        <span className="rounded-full w-3 h-3 border-black dark:border-white border-2" />
-                        <span className="rounded-full w-3 h-3 border-black dark:border-white border-2" />
-                        <span className="rounded-full w-3 h-3 border-black dark:border-white border-2" />
-                        <span className="rounded-full w-3 h-3 border-black dark:border-white border-2" />
-                    </div>
-                </div>
-                <div id="revealsUsed" className="">
-                    <Button onClick={() => handleRevealClick()} variant="outline" className="bg-black text-white dark:bg-white dark:text-black">Reveal Letter</Button>
-                </div>
-            </div>
+            <RevealDisplay onRevealClick={handleRevealClick} reveals={reveals} />
         </>
     );
 };
