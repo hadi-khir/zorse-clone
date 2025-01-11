@@ -20,7 +20,7 @@ export default function Home() {
         <hr />
       </section>
       <section id="game">
-        <div className="flex justify-center justify-items-center m-8">
+        <div className="flex justify-center m-8 w-1/2 mx-auto">
           <div className="grid grid-cols-1 gap-8 justify-items-center">
             <span>Select a space to revel letters.</span>
             <div className="bg-lime-200 text-center p-2 w-5/6">
