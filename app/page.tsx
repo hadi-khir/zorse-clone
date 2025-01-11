@@ -2,7 +2,6 @@
 import DateDisplay from "@/components/date";
 import { ModeToggle } from "@/components/mode-toggle";
 import PhraseDisplay from "@/components/phrase-display";
-import RevealDisplay from "@/components/reveal-display";
 import ScreenKeyboard from "@/components/screen-keyboard";
 import { Button } from "@/components/ui/button";
 
@@ -27,7 +26,6 @@ export default function Home() {
               <span className="text-2xl text-bold dark:text-black">SUCCESSFULLY KICK YOUR HANGOVERS BUTT</span>
             </div>
             <PhraseDisplay />
-            <RevealDisplay />
             <div id="guessPhraseBtn" className="flex justify-center w-2/6">
               <Button variant={"outline"} className="bg-black text-white dark:bg-white dark:text-black w-5/6">
                 Enter a Phrase
