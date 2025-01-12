@@ -49,7 +49,7 @@ const PhraseDisplay = () => {
     const handleRevealClick = () => {
 
         if (selectedTile) {
-            
+
             setRevealedLetters([...revealedLetters, selectedTile.letter.toUpperCase()]);
             setSelectedTile(null);
 
@@ -76,7 +76,8 @@ const PhraseDisplay = () => {
                         {word.split("").map((letter, letterIndex) => {
                             const isRevealed = revealedLetters.includes(letter.toUpperCase());
                             const isSelected = !isRevealed &&
-                                selectedTile?.letterIndex === letterIndex && selectedTile?.wordIndex === wordIndex;
+                                selectedTile?.letterIndex === letterIndex && 
+                                selectedTile?.wordIndex === wordIndex;
 
                             return (
                                 <Tile
