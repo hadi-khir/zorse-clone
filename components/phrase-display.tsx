@@ -167,6 +167,32 @@ const PhraseDisplay = () => {
         setIsCorrect(allCorrect);
     };
 
+    const isAllTilesFilled = () => {
+        const words = solution.split(" ");
+        
+        // Check each position that isn't revealed
+        for (let wordIndex = 0; wordIndex < words.length; wordIndex++) {
+            const word = words[wordIndex];
+            for (let letterIndex = 0; letterIndex < word.length; letterIndex++) {
+                const letter = word[letterIndex];
+                
+                // Skip revealed letters
+                if (revealedLetters.includes(letter.toUpperCase())) {
+                    continue;
+                }
+
+                // Check if there's a guess for this position
+                const hasGuess = guessedLetters.some(
+                    guess => guess.wordIndex === wordIndex && 
+                            guess.letterIndex === letterIndex
+                );
+
+                if (!hasGuess) return false;
+            }
+        }
+        return true;
+    };
+
     return (
         <>
             <div className="flex flex-wrap gap-6 justify-center w-5/6">
@@ -198,10 +224,14 @@ const PhraseDisplay = () => {
             </div>
             {!editMode && (<RevealDisplay tileSelected={selectedTile !== null} onRevealClick={handleRevealClick} reveals={reveals} />)}
             <div id="guessPhraseBtn" className="w-2/6 grid grid-cols-1 justify-items-center gap-4">
-                {editMode && <Button className="w-full" onClick={() => {
-                    checkSolution();
-                    setEditMode(!editMode)
-                }}>
+                {editMode && <Button 
+                    className="w-full" 
+                    onClick={() => {
+                        checkSolution();
+                        setEditMode(!editMode)
+                    }}
+                    disabled={!isAllTilesFilled()}
+                >
                     <span>Submit Final Phrase</span>
                 </Button>}
                 <Button
