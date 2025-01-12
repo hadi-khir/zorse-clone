@@ -6,7 +6,12 @@ import { fetchPuzzleSolution, PuzzleSolution } from "@/lib/data";
 import RevealDisplay from "./reveal-display";
 import { Button, buttonVariants } from "./ui/button";
 import ScreenKeyboard from "./screen-keyboard";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
 import { cn } from "@/lib/utils";
 
 interface SelectedTile {
@@ -282,17 +287,22 @@ const PhraseDisplay = () => {
                         <div className="py-2 text-lg font-bold text-black">
                             {solution}
                         </div>
-                        <Button
-                            onClick={() => {
-                                const revealEmojis = "🟩".repeat(reveals.length);
-                                const resultEmoji = isCorrect ? "🦁" : "🤷";
-                                navigator.clipboard.writeText(`Horse Puzzle Results\n${revealEmojis}${resultEmoji}`);
-                            }}
-                            variant="default"
-                            className="mt-4 w-full"
-                        >
-                            Share Results
-                        </Button>
+                        <Popover>
+                            <PopoverTrigger
+                                className={cn(
+                                    buttonVariants({ variant: "outline" }),
+                                    "w-full bg-black text-white"
+                                )}
+                                onClick={() => {
+                                    const revealEmojis = "🟩".repeat(reveals.length);
+                                    const resultEmoji = isCorrect ? "🦁" : "🤷";
+                                    navigator.clipboard.writeText(`Horse Puzzle Results\n${revealEmojis}${resultEmoji}`);
+                                }}
+                            >
+                                Share Results
+                            </PopoverTrigger>
+                            <PopoverContent>Results copied to clipboard!</PopoverContent>
+                        </Popover>
                     </div>
                 </DialogHeader>
             </DialogContent>
