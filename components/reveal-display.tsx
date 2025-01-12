@@ -7,10 +7,11 @@ interface Reveals {
 
 interface RevealDisplayProps {
     reveals: Reveals[];
+    tileSelected: boolean;
     onRevealClick: () => void;
 }
 
-const RevealDisplay = ({reveals, onRevealClick}: RevealDisplayProps) => {
+const RevealDisplay = ({reveals, tileSelected, onRevealClick}: RevealDisplayProps) => {
 
     const revealsAvailable = reveals.filter(reveal => !reveal.used).length > 0;
 
@@ -25,7 +26,7 @@ const RevealDisplay = ({reveals, onRevealClick}: RevealDisplayProps) => {
                 </div>
             </div>
             <div id="revealsUsed" className="">
-                <Button onClick={onRevealClick} variant="outline" className="bg-black text-white dark:bg-white dark:text-black">Reveal Letter</Button>
+                <Button onClick={onRevealClick} disabled={!tileSelected} variant="outline" className="bg-black text-white dark:bg-white dark:text-black">Reveal Letter</Button>
             </div>
         </div>
     )

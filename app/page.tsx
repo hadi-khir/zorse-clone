@@ -2,8 +2,6 @@
 import DateDisplay from "@/components/date";
 import { ModeToggle } from "@/components/mode-toggle";
 import PhraseDisplay from "@/components/phrase-display";
-import ScreenKeyboard from "@/components/screen-keyboard";
-import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
@@ -21,17 +19,11 @@ export default function Home() {
       <section id="game">
         <div className="flex justify-center m-8 w-1/2 mx-auto">
           <div className="grid grid-cols-1 gap-8 justify-items-center">
-            <span>Select a space to revel letters.</span>
+            <span>Select a space to reveal letters.</span>
             <div className="bg-lime-200 text-center p-2 w-5/6">
               <span className="text-2xl text-bold dark:text-black">SUCCESSFULLY KICK YOUR HANGOVERS BUTT</span>
             </div>
             <PhraseDisplay />
-            <div id="guessPhraseBtn" className="flex justify-center w-2/6">
-              <Button variant={"outline"} className="bg-black text-white dark:bg-white dark:text-black w-5/6">
-                Enter a Phrase
-              </Button>
-            </div>
-            <ScreenKeyboard />
           </div>
         </div>
       </section>
