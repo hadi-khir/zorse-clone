@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import Tile from "./tile";
 import { fetchPuzzleSolution, PuzzleSolution } from "@/lib/data";
 import RevealDisplay from "./reveal-display";
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import ScreenKeyboard from "./screen-keyboard";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+import { cn } from "@/lib/utils";
 
 interface SelectedTile {
     letter: string;
@@ -174,13 +176,13 @@ const PhraseDisplay = () => {
 
     const isAllTilesFilled = () => {
         const words = solution.split(" ");
-        
+
         // Check each position that isn't revealed
         for (let wordIndex = 0; wordIndex < words.length; wordIndex++) {
             const word = words[wordIndex];
             for (let letterIndex = 0; letterIndex < word.length; letterIndex++) {
                 const letter = word[letterIndex];
-                
+
                 // Skip revealed letters
                 if (revealedLetters.includes(letter.toUpperCase())) {
                     continue;
@@ -188,8 +190,8 @@ const PhraseDisplay = () => {
 
                 // Check if there's a guess for this position
                 const hasGuess = guessedLetters.some(
-                    guess => guess.wordIndex === wordIndex && 
-                            guess.letterIndex === letterIndex
+                    guess => guess.wordIndex === wordIndex &&
+                        guess.letterIndex === letterIndex
                 );
 
                 if (!hasGuess) return false;
@@ -199,7 +201,7 @@ const PhraseDisplay = () => {
     };
 
     return (
-        <>
+        <Dialog>
             <div className="flex flex-wrap gap-6 justify-center w-5/6">
                 {solution.split(" ").map((word, wordIndex) => (
                     <div key={wordIndex} className="flex justify-center gap-1">
@@ -229,16 +231,20 @@ const PhraseDisplay = () => {
             </div>
             {!editMode && (<RevealDisplay tileSelected={selectedTile !== null} onRevealClick={handleRevealClick} reveals={reveals} />)}
             <div id="guessPhraseBtn" className="w-2/6 grid grid-cols-1 justify-items-center gap-4">
-                {editMode && <Button 
-                    className="w-full" 
-                    onClick={() => {
-                        checkSolution();
-                        setEditMode(!editMode)
-                    }}
-                    disabled={!isAllTilesFilled()}
-                >
-                    <span>Submit Final Phrase</span>
-                </Button>}
+                {editMode &&
+                    <DialogTrigger
+                        className={cn(
+                            buttonVariants({ variant: "outline" }),
+                            "w-full bg-black text-white"
+                        )}
+                        onClick={() => {
+                            checkSolution();
+                            setEditMode(!editMode)
+                        }}
+                        disabled={!isAllTilesFilled()}
+                    >
+                        <span>Submit Final Phrase</span>
+                    </DialogTrigger>}
                 <Button
                     onClick={() => {
                         setGuessedLetters([]);
@@ -261,8 +267,19 @@ const PhraseDisplay = () => {
                 </div>
             )}
 
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Are you absolutely sure?</DialogTitle>
+                    <DialogDescription>
+                        This action cannot be undone. This will permanently delete your account
+                        and remove your data from our servers.
+                    </DialogDescription>
+                </DialogHeader>
+            </DialogContent>
+
             {editMode && <ScreenKeyboard onKeyPress={handleKeyPress} />}
-        </>
+
+        </Dialog>
     );
 };
 
