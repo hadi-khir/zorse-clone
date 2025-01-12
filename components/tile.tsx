@@ -1,5 +1,6 @@
 interface TileProps {
     letter: string;
+    guessedLetter?: string;
     isVisible: boolean;
     isSelected: boolean;
     onClick: () => void;
@@ -7,6 +8,7 @@ interface TileProps {
 
 const Tile = ({
     letter,
+    guessedLetter,
     isVisible,
     isSelected,
     onClick,
@@ -21,8 +23,8 @@ const Tile = ({
             className={`w-12 h-12 flex items-center justify-center border-2 cursor-pointer transition-all ${isVisible ? "bg-lime-200" : "bg-gray-200"
                 } ${isSelected ? "border-4 border-black" : "border-gray-400"}`}
         >
-            <span className={`text-xl font-bold ${!isVisible && "invisible"}`}>
-                {letter}
+            <span className={`text-xl font-bold ${(!isVisible && !guessedLetter) && "invisible"}`}>
+                {guessedLetter ? guessedLetter : letter}
             </span>
         </div>
     );
