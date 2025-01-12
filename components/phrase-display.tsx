@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Tile from "./tile";
 import { fetchPuzzleSolution, PuzzleSolution } from "@/lib/data";
 import RevealDisplay from "./reveal-display";
+import { Button } from "./ui/button";
+import ScreenKeyboard from "./screen-keyboard";
 
 interface SelectedTile {
     letter: string;
@@ -27,6 +29,7 @@ const PhraseDisplay = () => {
     const [revealedLetters, setRevealedLetters] = useState<string[]>([]);
     const [selectedTile, setSelectedTile] = useState<SelectedTile | null>(null);
     const [reveals, setReveals] = useState<Reveals[]>(initialReveals);
+    const [editMode, setEditMode] = useState<boolean>(false);
 
     useEffect(() => {
 
@@ -92,7 +95,16 @@ const PhraseDisplay = () => {
                     </div>
                 ))}
             </div>
-            <RevealDisplay onRevealClick={handleRevealClick} reveals={reveals} />
+            {!editMode && (<RevealDisplay onRevealClick={handleRevealClick} reveals={reveals} />)}
+            <div id="guessPhraseBtn" className="flex justify-center w-2/6">
+              <Button onClick={() => setEditMode(!editMode)} variant={"outline"} className="bg-black text-white dark:bg-white dark:text-black w-5/6">
+                {!editMode ? (
+                    <span>Enter a Phrase</span>
+                ):
+                (<span>Go Back</span>)}
+              </Button>
+            </div>
+            {editMode && <ScreenKeyboard />}
         </>
     );
 };
