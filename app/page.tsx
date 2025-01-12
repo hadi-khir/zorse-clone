@@ -19,7 +19,7 @@ export default function Home() {
       <section id="game">
         <div className="flex justify-center m-8 w-1/2 mx-auto">
           <div className="grid grid-cols-1 gap-8 justify-items-center">
-            <span>Select a space to revel letters.</span>
+            <span>Select a space to reveal letters.</span>
             <div className="bg-lime-200 text-center p-2 w-5/6">
               <span className="text-2xl text-bold dark:text-black">SUCCESSFULLY KICK YOUR HANGOVERS BUTT</span>
             </div>

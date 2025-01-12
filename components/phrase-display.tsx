@@ -79,6 +79,41 @@ const PhraseDisplay = () => {
         }
     }
 
+    const findNextAvailableTile = (
+        currentTile: SelectedTile,
+        solution: string,
+        revealedLetters: string[]
+    ): SelectedTile | null => {
+        const words = solution.split(" ");
+        let nextWordIndex = currentTile.wordIndex;
+        let nextLetterIndex = currentTile.letterIndex + 1;
+
+        while (nextWordIndex < words.length) {
+            // If we've reached the end of the current word
+            if (nextLetterIndex >= words[nextWordIndex].length) {
+                nextWordIndex++;
+                nextLetterIndex = 0;
+                continue;
+            }
+
+            // Check if the current position is revealed
+            const letter = words[nextWordIndex][nextLetterIndex];
+            if (!revealedLetters.includes(letter.toUpperCase())) {
+                // Found an unrevealed tile
+                return {
+                    letter,
+                    letterIndex: nextLetterIndex,
+                    wordIndex: nextWordIndex
+                };
+            }
+
+            nextLetterIndex++;
+        }
+
+        // If we get here, no more tiles are available
+        return null;
+    };
+
     const handleKeyPress = (key: string) => {
         if (!selectedTile || !editMode) return;
 
@@ -105,37 +140,9 @@ const PhraseDisplay = () => {
             }
         ]);
 
-        // Find next available tile
-        const words = solution.split(" ");
-        let nextWordIndex = selectedTile.wordIndex;
-        let nextLetterIndex = selectedTile.letterIndex + 1;
-
-        // Keep searching until we find an unrevealed tile or reach the end
-        while (nextWordIndex < words.length) {
-            // If we've reached the end of the current word
-            if (nextLetterIndex >= words[nextWordIndex].length) {
-                nextWordIndex++;
-                nextLetterIndex = 0;
-                continue;
-            }
-
-            // Check if the current position is revealed
-            const letter = words[nextWordIndex][nextLetterIndex];
-            if (!revealedLetters.includes(letter.toUpperCase())) {
-                // Found an unrevealed tile
-                setSelectedTile({
-                    letter,
-                    letterIndex: nextLetterIndex,
-                    wordIndex: nextWordIndex
-                });
-                return;
-            }
-
-            nextLetterIndex++;
-        }
-
-        // If we get here, no more tiles are available
-        setSelectedTile(null);
+        // Find and set next available tile
+        const nextTile = findNextAvailableTile(selectedTile, solution, revealedLetters);
+        setSelectedTile(nextTile);
     };
 
     const checkSolution = () => {
