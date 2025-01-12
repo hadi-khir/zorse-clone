@@ -268,12 +268,32 @@ const PhraseDisplay = () => {
             )}
 
             <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Are you absolutely sure?</DialogTitle>
-                    <DialogDescription>
-                        This action cannot be undone. This will permanently delete your account
-                        and remove your data from our servers.
-                    </DialogDescription>
+                <DialogHeader className="text-center">
+                    <DialogTitle>{isCorrect ? <span>Off to the races!</span> : <span>Neigh... Next time!</span>}</DialogTitle>
+                    <div className="flex flex-col items-center space-y-2 text-sm text-muted-foreground">
+                        <div className="py-4 text-4xl">
+                            {"🟩 ".repeat(reveals.length)}
+                            {isCorrect ? "🦁" : "🤷"}
+                        </div>
+                        <span className="text-black">
+                            {`You revealed ${reveals.filter(r => r.used).length} letters and ${isCorrect ? "guessed the puzzle correctly!" : "didn't quite get it this time."}`}
+                        </span>
+                        <span className="text-md text-black">The answer is:</span>
+                        <div className="py-2 text-lg font-bold text-black">
+                            {solution}
+                        </div>
+                        <Button
+                            onClick={() => {
+                                const revealEmojis = "🟩".repeat(reveals.length);
+                                const resultEmoji = isCorrect ? "🦁" : "🤷";
+                                navigator.clipboard.writeText(`Horse Puzzle Results\n${revealEmojis}${resultEmoji}`);
+                            }}
+                            variant="default"
+                            className="mt-4 w-full"
+                        >
+                            Share Results
+                        </Button>
+                    </div>
                 </DialogHeader>
             </DialogContent>
 
