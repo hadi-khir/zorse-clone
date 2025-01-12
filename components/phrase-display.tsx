@@ -199,16 +199,15 @@ const PhraseDisplay = () => {
             {!editMode && (<RevealDisplay tileSelected={selectedTile !== null} onRevealClick={handleRevealClick} reveals={reveals} />)}
             <div id="guessPhraseBtn" className="w-2/6 grid grid-cols-1 justify-items-center gap-4">
                 {editMode && <Button className="w-full" onClick={() => {
-                    checkSolution(), setEditMode(!editMode)
+                    checkSolution();
+                    setEditMode(!editMode)
                 }}>
                     <span>Submit Final Phrase</span>
                 </Button>}
                 <Button
                     onClick={() => {
-                        if (!editMode) {
-                            setGuessedLetters([]);
-                            setIsCorrect(null);
-                        }
+                        setGuessedLetters([]);
+                        setIsCorrect(null);
                         setEditMode(!editMode);
                     }}
                     variant={"outline"}
