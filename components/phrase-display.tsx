@@ -23,7 +23,7 @@ const initialReveals: Reveals[] = Array.from({ length: 5 }, (_, i) => ({
 
 const PhraseDisplay = () => {
 
-    const [solution, setSolution] = useState<String>("");
+    const [solution, setSolution] = useState<string>("");
     const [revealedLetters, setRevealedLetters] = useState<string[]>([]);
     const [selectedTile, setSelectedTile] = useState<SelectedTile | null>(null);
     const [reveals, setReveals] = useState<Reveals[]>(initialReveals);
