@@ -234,7 +234,9 @@ const PhraseDisplay = () => {
                     </div>
                 ))}
             </div>
+
             {!editMode && (<RevealDisplay tileSelected={selectedTile !== null} onRevealClick={handleRevealClick} reveals={reveals} />)}
+            
             <div id="guessPhraseBtn" className="w-2/6 grid grid-cols-1 justify-items-center gap-4">
                 {editMode &&
                     <DialogTrigger
