@@ -82,6 +82,15 @@ const PhraseDisplay = () => {
     const handleKeyPress = (key: string) => {
         if (!selectedTile || !editMode) return;
 
+        if (key === "BACKSPACE") {
+            // Remove the letter at the current position
+            setGuessedLetters(guessedLetters.filter(
+                guess => !(guess.letterIndex === selectedTile.letterIndex &&
+                    guess.wordIndex === selectedTile.wordIndex)
+            ));
+            return;
+        }
+
         const filteredGuesses = guessedLetters.filter(
             guess => !(guess.letterIndex === selectedTile.letterIndex &&
                 guess.wordIndex === selectedTile.wordIndex)

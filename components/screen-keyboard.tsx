@@ -10,13 +10,17 @@ interface ScreenKeyboardProps {
 const ScreenKeyboard = ({ onKeyPress }: ScreenKeyboardProps) => {
 
   const iosLayout = {
-    default: ["Q W E R T Y U I O P {bksp}", "A S D F G H J K L", "Z X C V B N M"],
+    default: ["Q W E R T Y U I O P", "A S D F G H J K L", "Z X C V B N M {bksp}"],
   };
 
   const iosDisplay = {
-    "{bksp}": "⌫",
-    "{numbers}": "123",
-    "{default}": "ABC"
+    "{bksp}": "⌫"
+  };
+
+  const handleKeyPress = (button: string) => {
+
+    const key = button === "{bksp}" ? "BACKSPACE" : button;
+    onKeyPress(key);
   };
 
   return (
@@ -24,10 +28,9 @@ const ScreenKeyboard = ({ onKeyPress }: ScreenKeyboardProps) => {
       layout={iosLayout}
       display={iosDisplay}
       theme="hg-theme-default myTheme"
-      onKeyPress={onKeyPress}
+      onKeyPress={handleKeyPress}
       buttonTheme={[
-        { class: "hg-button hg-space", buttons: "{space}" },
-        { class: "hg-button hg-backspace", buttons: "{backspace}" }
+        { class: "hg-button hg-backspace", buttons: "{bksp}" }
       ]}
       className="dark:bg-gray-800 dark:text-black"
     />
