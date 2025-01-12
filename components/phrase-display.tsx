@@ -236,7 +236,7 @@ const PhraseDisplay = () => {
             </div>
 
             {!editMode && (<RevealDisplay tileSelected={selectedTile !== null} onRevealClick={handleRevealClick} reveals={reveals} />)}
-            
+
             <div id="guessPhraseBtn" className="w-2/6 grid grid-cols-1 justify-items-center gap-4">
                 {editMode &&
                     <DialogTrigger
@@ -298,7 +298,7 @@ const PhraseDisplay = () => {
                                 onClick={() => {
                                     const revealEmojis = "🟩".repeat(reveals.length);
                                     const resultEmoji = isCorrect ? "🦁" : "🤷";
-                                    navigator.clipboard.writeText(`Horse Puzzle Results\n${revealEmojis}${resultEmoji}`);
+                                    navigator.clipboard.writeText(`Liger Results\n${revealEmojis}${resultEmoji}`);
                                 }}
                             >
                                 Share Results
