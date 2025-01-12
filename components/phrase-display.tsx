@@ -162,8 +162,6 @@ const PhraseDisplay = () => {
                     g => g.wordIndex === wordIndex && g.letterIndex === letterIndex
                 );
 
-                console.log(guess, letter)
-
                 // If no guess or incorrect guess, solution is wrong
                 if (!guess || guess.letter !== letter.toUpperCase()) {
                     allCorrect = false;
