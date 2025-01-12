@@ -1,8 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Tile from "./tile";
-import { fetchPuzzleSolution, PuzzleSolution } from "@/lib/data";
 import RevealDisplay from "./reveal-display";
 import { Button, buttonVariants } from "./ui/button";
 import ScreenKeyboard from "./screen-keyboard";
@@ -31,30 +30,24 @@ interface GuessedLetter {
     wordIndex: number;
 }
 
+interface PhraseDisplayProps {
+    solution: string;
+    revealed: string[]
+}
+
 const initialReveals: Reveals[] = Array.from({ length: 5 }, (_, i) => ({
     value: i,
     used: false
 }));
 
-const PhraseDisplay = () => {
+const PhraseDisplay = ({solution, revealed}: PhraseDisplayProps) => {
 
-    const [solution, setSolution] = useState<string>("");
-    const [revealedLetters, setRevealedLetters] = useState<string[]>([]);
+    const [revealedLetters, setRevealedLetters] = useState<string[]>(revealed);
     const [selectedTile, setSelectedTile] = useState<SelectedTile | null>(null);
     const [reveals, setReveals] = useState<Reveals[]>(initialReveals);
     const [editMode, setEditMode] = useState<boolean>(false);
     const [guessedLetters, setGuessedLetters] = useState<GuessedLetter[]>([]);
     const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
-
-    useEffect(() => {
-
-        async function fetchData() {
-            const data: PuzzleSolution = await fetchPuzzleSolution();
-            setSolution(data.solution);
-            setRevealedLetters(data.revealedLetters);
-        }
-        fetchData();
-    }, []);
 
     const handleTileClick = (letter: string, letterIndex: number, wordIndex: number) => {
         setSelectedTile({

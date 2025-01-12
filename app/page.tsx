@@ -2,8 +2,13 @@
 import DateDisplay from "@/components/date";
 import { ModeToggle } from "@/components/mode-toggle";
 import PhraseDisplay from "@/components/phrase-display";
+import { fetchPuzzleSolution, PuzzleSolution } from "@/lib/data";
 
-export default function Home() {
+export default async function Home() {
+
+
+  const data: PuzzleSolution = await fetchPuzzleSolution();
+  
   return (
     <main>
       <section id="title">
@@ -23,7 +28,7 @@ export default function Home() {
             <div className="bg-lime-200 text-center p-2 w-5/6">
               <span className="text-2xl text-bold dark:text-black">SUCCESSFULLY KICK YOUR HANGOVERS BUTT</span>
             </div>
-            <PhraseDisplay />
+            <PhraseDisplay solution={data.solution} revealed={data.revealedLetters} />
           </div>
         </div>
       </section>

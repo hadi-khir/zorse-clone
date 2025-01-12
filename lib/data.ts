@@ -1,5 +1,6 @@
-import data from "./data.json";
+import { PrismaClient } from '@prisma/client';
 
+const prisma = new PrismaClient();
 
 export interface PuzzleSolution {
     solution: string;
@@ -7,11 +8,24 @@ export interface PuzzleSolution {
 }
 
 export async function fetchPuzzleSolution(): Promise<PuzzleSolution> {
+    
+    // Get today's date at midnight UTC
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
 
-    return new Promise((resolve) => {
-        setTimeout(() => {
+    const puzzle = await prisma.liger_Puzzle.findFirst({
+        where: {
+            datePublished: today
+        },
+        select: {
+            solution: true,
+            revealedLetters: true
+        }
+    });
 
-            resolve(data);
-        }, 500); // TODO: Remove simulated delay
-    })
+    if (!puzzle) {
+        throw new Error('No puzzle found for today');
+    }
+
+    return puzzle;
 }
