@@ -4,8 +4,15 @@ import { useEffect, useState } from "react";
 import Tile from "./tile";
 import { fetchPuzzleSolution, PuzzleSolution } from "@/lib/data";
 import RevealDisplay from "./reveal-display";
-import { Button } from "./ui/button";
+import { Button, buttonVariants } from "./ui/button";
 import ScreenKeyboard from "./screen-keyboard";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
+import { cn } from "@/lib/utils";
 
 interface SelectedTile {
     letter: string;
@@ -174,13 +181,13 @@ const PhraseDisplay = () => {
 
     const isAllTilesFilled = () => {
         const words = solution.split(" ");
-        
+
         // Check each position that isn't revealed
         for (let wordIndex = 0; wordIndex < words.length; wordIndex++) {
             const word = words[wordIndex];
             for (let letterIndex = 0; letterIndex < word.length; letterIndex++) {
                 const letter = word[letterIndex];
-                
+
                 // Skip revealed letters
                 if (revealedLetters.includes(letter.toUpperCase())) {
                     continue;
@@ -188,8 +195,8 @@ const PhraseDisplay = () => {
 
                 // Check if there's a guess for this position
                 const hasGuess = guessedLetters.some(
-                    guess => guess.wordIndex === wordIndex && 
-                            guess.letterIndex === letterIndex
+                    guess => guess.wordIndex === wordIndex &&
+                        guess.letterIndex === letterIndex
                 );
 
                 if (!hasGuess) return false;
@@ -199,7 +206,7 @@ const PhraseDisplay = () => {
     };
 
     return (
-        <>
+        <Dialog>
             <div className="flex flex-wrap gap-6 justify-center w-5/6">
                 {solution.split(" ").map((word, wordIndex) => (
                     <div key={wordIndex} className="flex justify-center gap-1">
@@ -227,18 +234,24 @@ const PhraseDisplay = () => {
                     </div>
                 ))}
             </div>
+
             {!editMode && (<RevealDisplay tileSelected={selectedTile !== null} onRevealClick={handleRevealClick} reveals={reveals} />)}
+
             <div id="guessPhraseBtn" className="w-2/6 grid grid-cols-1 justify-items-center gap-4">
-                {editMode && <Button 
-                    className="w-full" 
-                    onClick={() => {
-                        checkSolution();
-                        setEditMode(!editMode)
-                    }}
-                    disabled={!isAllTilesFilled()}
-                >
-                    <span>Submit Final Phrase</span>
-                </Button>}
+                {editMode &&
+                    <DialogTrigger
+                        className={cn(
+                            buttonVariants({ variant: "outline" }),
+                            "w-full bg-black text-white"
+                        )}
+                        onClick={() => {
+                            checkSolution();
+                            setEditMode(!editMode)
+                        }}
+                        disabled={!isAllTilesFilled()}
+                    >
+                        <span>Submit Final Phrase</span>
+                    </DialogTrigger>}
                 <Button
                     onClick={() => {
                         setGuessedLetters([]);
@@ -261,8 +274,44 @@ const PhraseDisplay = () => {
                 </div>
             )}
 
+            <DialogContent>
+                <DialogHeader className="text-center">
+                    <DialogTitle>{isCorrect ? <span>Off to the races!</span> : <span>Neigh... Next time!</span>}</DialogTitle>
+                    <div className="flex flex-col items-center space-y-2 text-sm text-muted-foreground">
+                        <div className="py-4 text-4xl">
+                            {"🟩 ".repeat(reveals.length)}
+                            {isCorrect ? "🦁" : "🤷"}
+                        </div>
+                        <span className="text-black">
+                            {`You revealed ${reveals.filter(r => r.used).length} letters and ${isCorrect ? "guessed the puzzle correctly!" : "didn't quite get it this time."}`}
+                        </span>
+                        <span className="text-md text-black">The answer is:</span>
+                        <div className="py-2 text-lg font-bold text-black">
+                            {solution}
+                        </div>
+                        <Popover>
+                            <PopoverTrigger
+                                className={cn(
+                                    buttonVariants({ variant: "outline" }),
+                                    "w-full bg-black text-white"
+                                )}
+                                onClick={() => {
+                                    const revealEmojis = "🟩".repeat(reveals.length);
+                                    const resultEmoji = isCorrect ? "🦁" : "🤷";
+                                    navigator.clipboard.writeText(`Liger Results\n${revealEmojis}${resultEmoji}`);
+                                }}
+                            >
+                                Share Results
+                            </PopoverTrigger>
+                            <PopoverContent>Results copied to clipboard!</PopoverContent>
+                        </Popover>
+                    </div>
+                </DialogHeader>
+            </DialogContent>
+
             {editMode && <ScreenKeyboard onKeyPress={handleKeyPress} />}
-        </>
+
+        </Dialog>
     );
 };
 
