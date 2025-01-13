@@ -1,4 +1,5 @@
 
+import { unstable_noStore } from 'next/cache';
 import prisma from './prisma';
 
 export interface PuzzleSolution {
@@ -9,6 +10,8 @@ export interface PuzzleSolution {
 }
 
 export async function fetchPuzzleSolution(): Promise<PuzzleSolution> {
+
+    unstable_noStore();
 
     // Get today's date at midnight in Eastern Time
     const now = new Date();
