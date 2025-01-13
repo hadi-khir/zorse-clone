@@ -28,7 +28,7 @@ export default async function Home() {
             <div className="bg-lime-200 text-center p-2 w-5/6">
               <span className="text-2xl text-bold dark:text-black">SUCCESSFULLY KICK YOUR HANGOVERS BUTT</span>
             </div>
-            <PhraseDisplay solution={data.solution} revealed={data.revealedLetters} />
+            <PhraseDisplay solution={data.solution} revealed={data.revealedLetters} puzzleDate={data.datePublished} />
           </div>
         </div>
       </section>

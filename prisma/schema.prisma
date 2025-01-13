@@ -17,3 +17,11 @@ model Liger_Puzzle {
   revealedLetters   String[]
   datePublished     DateTime
 }
+
+model Liger_Leaderboard {
+  id          String     @default(cuid()) @id
+  username    String
+  reveals     Int
+  solved      Boolean
+  puzzleDate  DateTime
+}

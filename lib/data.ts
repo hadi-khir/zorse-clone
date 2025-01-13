@@ -4,6 +4,7 @@ import prisma from './prisma';
 export interface PuzzleSolution {
     solution: string;
     revealedLetters: string[];
+    datePublished: Date;
 }
 
 export async function fetchPuzzleSolution(): Promise<PuzzleSolution> {
@@ -18,7 +19,8 @@ export async function fetchPuzzleSolution(): Promise<PuzzleSolution> {
         },
         select: {
             solution: true,
-            revealedLetters: true
+            revealedLetters: true,
+            datePublished: true
         }
     });
 
