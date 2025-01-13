@@ -323,12 +323,32 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
             </div>
 
             {isCorrect !== null && !editMode && (
-                <div className={`text-center p-2 rounded-md ${isCorrect ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}`}>
-                    {isCorrect ?
-                        "Congratulations! You solved it!" :
-                        "Not quite right. Better luck next time!"
-                    }
-                </div>
+                <>
+
+                    <div className={`text-center p-2 rounded-md ${isCorrect ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}`}>
+                        {isCorrect ?
+                            "Congratulations! You solved it!" :
+                            "Not quite right. Better luck next time!"
+                        }
+                    </div>
+
+                    <Popover>
+                        <PopoverTrigger
+                            className={cn(
+                                buttonVariants({ variant: "outline" }),
+                                "w-5/6 bg-black text-white"
+                            )}
+                            onClick={() => {
+                                const revealEmojis = "🟩".repeat(reveals.length);
+                                const resultEmoji = isCorrect ? "🦁" : "🤷";
+                                navigator.clipboard.writeText(`Liger Results\n${revealEmojis}${resultEmoji}`);
+                            }}
+                        >
+                            Share Results
+                        </PopoverTrigger>
+                        <PopoverContent>Results copied to clipboard!</PopoverContent>
+                    </Popover>
+                </>
             )}
 
             <DialogContent>
