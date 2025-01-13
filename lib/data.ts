@@ -9,9 +9,14 @@ export interface PuzzleSolution {
 
 export async function fetchPuzzleSolution(): Promise<PuzzleSolution> {
 
-    // Get today's date at midnight UTC
+    // Get today's date at midnight in Eastern Time
     const now = new Date();
-    const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    const offsetInMinutes = now.getTimezoneOffset() + 300; // 300 minutes = 5 hours for Eastern Time
+    const adjustedDate = new Date(now.getTime() - offsetInMinutes * 60 * 1000);
+
+    const today = new Date(Date.UTC(adjustedDate.getUTCFullYear(), adjustedDate.getUTCMonth(), adjustedDate.getUTCDate()));
+
+    console.log(today);
 
     const puzzle = await prisma.liger_Puzzle.findFirst({
         where: {

@@ -119,6 +119,24 @@ const PhraseDisplay = ({solution, revealed, puzzleDate}: PhraseDisplayProps) => 
         return null;
     };
 
+    const findFirstUnrevealedTile = (solution: string, revealedLetters: string[]): SelectedTile | null => {
+        const words = solution.split(" ");
+        
+        for (let wordIndex = 0; wordIndex < words.length; wordIndex++) {
+            for (let letterIndex = 0; letterIndex < words[wordIndex].length; letterIndex++) {
+                const letter = words[wordIndex][letterIndex];
+                if (!revealedLetters.includes(letter.toUpperCase())) {
+                    return {
+                        letter,
+                        letterIndex,
+                        wordIndex
+                    };
+                }
+            }
+        }
+        return null;
+    };
+
     const handleKeyPress = (key: string) => {
         if (!selectedTile || !editMode) return;
 
@@ -257,8 +275,8 @@ const PhraseDisplay = ({solution, revealed, puzzleDate}: PhraseDisplayProps) => 
                             return (
                                 <Tile
                                     key={letterIndex}
-                                    guessedLetter={guessedLetter}
-                                    letter={letter}
+                                    guessedLetter={guessedLetter?.toUpperCase()}
+                                    letter={letter.toUpperCase()}
                                     isVisible={isRevealed}
                                     isSelected={isSelected}
                                     onClick={() => !isRevealed && handleTileClick(letter, letterIndex, wordIndex)}
@@ -291,6 +309,11 @@ const PhraseDisplay = ({solution, revealed, puzzleDate}: PhraseDisplayProps) => 
                         setGuessedLetters([]);
                         setIsCorrect(null);
                         setEditMode(!editMode);
+                        if (!editMode) {
+                            // When entering edit mode, find and select first unrevealed tile
+                            const firstUnrevealed = findFirstUnrevealedTile(solution, revealedLetters);
+                            setSelectedTile(firstUnrevealed);
+                        }
                     }}
                     variant={"outline"}
                     className="bg-white text-black w-5/6"
@@ -321,11 +344,11 @@ const PhraseDisplay = ({solution, revealed, puzzleDate}: PhraseDisplayProps) => 
                             {"🟩 ".repeat(reveals.length)}
                             {isCorrect ? "🦁" : "🤷"}
                         </div>
-                        <span className="text-black">
+                        <span>
                             {`You revealed ${reveals.filter(r => r.used).length} letters and ${isCorrect ? "guessed the puzzle correctly!" : "didn't quite get it this time."}`}
                         </span>
-                        <span className="text-md text-black">The answer is:</span>
-                        <div className="py-2 text-lg font-bold text-black">
+                        <span className="text-md">The answer is:</span>
+                        <div className="py-2 text-lg font-bold">
                             {solution}
                         </div>
                         <Popover>
