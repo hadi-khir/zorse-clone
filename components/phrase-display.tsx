@@ -12,6 +12,8 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { cn } from "@/lib/utils";
+import { UsernameModal } from "./username-modal";
+import Leaderboard from "./leaderboard";
 
 interface SelectedTile {
     letter: string;
@@ -32,7 +34,8 @@ interface GuessedLetter {
 
 interface PhraseDisplayProps {
     solution: string;
-    revealed: string[]
+    revealed: string[];
+    puzzleDate: Date;
 }
 
 const initialReveals: Reveals[] = Array.from({ length: 5 }, (_, i) => ({
@@ -40,7 +43,7 @@ const initialReveals: Reveals[] = Array.from({ length: 5 }, (_, i) => ({
     used: false
 }));
 
-const PhraseDisplay = ({solution, revealed}: PhraseDisplayProps) => {
+const PhraseDisplay = ({solution, revealed, puzzleDate}: PhraseDisplayProps) => {
 
     const [revealedLetters, setRevealedLetters] = useState<string[]>(revealed);
     const [selectedTile, setSelectedTile] = useState<SelectedTile | null>(null);
@@ -48,6 +51,9 @@ const PhraseDisplay = ({solution, revealed}: PhraseDisplayProps) => {
     const [editMode, setEditMode] = useState<boolean>(false);
     const [guessedLetters, setGuessedLetters] = useState<GuessedLetter[]>([]);
     const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+    const [username, setUsername] = useState<string | null>(null);
+    const [showUsernameModal, setShowUsernameModal] = useState(true);
+    const [leaderboardKey, setLeaderboardKey] = useState<number>(0);
 
     const handleTileClick = (letter: string, letterIndex: number, wordIndex: number) => {
         setSelectedTile({
@@ -114,6 +120,24 @@ const PhraseDisplay = ({solution, revealed}: PhraseDisplayProps) => {
         return null;
     };
 
+    const findFirstUnrevealedTile = (solution: string, revealedLetters: string[]): SelectedTile | null => {
+        const words = solution.split(" ");
+        
+        for (let wordIndex = 0; wordIndex < words.length; wordIndex++) {
+            for (let letterIndex = 0; letterIndex < words[wordIndex].length; letterIndex++) {
+                const letter = words[wordIndex][letterIndex];
+                if (!revealedLetters.includes(letter.toUpperCase())) {
+                    return {
+                        letter,
+                        letterIndex,
+                        wordIndex
+                    };
+                }
+            }
+        }
+        return null;
+    };
+
     const handleKeyPress = (key: string) => {
         if (!selectedTile || !editMode) return;
 
@@ -170,6 +194,7 @@ const PhraseDisplay = ({solution, revealed}: PhraseDisplayProps) => {
         });
 
         setIsCorrect(allCorrect);
+        submitScore(allCorrect);
     };
 
     const isAllTilesFilled = () => {
@@ -198,8 +223,39 @@ const PhraseDisplay = ({solution, revealed}: PhraseDisplayProps) => {
         return true;
     };
 
+    const handleUsernameSubmit = (name: string) => {
+        setUsername(name);
+        setShowUsernameModal(false);
+    };
+
+    const submitScore = async (solved: boolean) => {
+        if (!username) return;
+
+        const revealsUsed = reveals.filter(r => r.used).length;
+        
+        try {
+            await fetch('/api/leaderboard', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username,
+                    reveals: revealsUsed,
+                    solved: solved,
+                    puzzleDate: puzzleDate
+                }),
+            });
+
+            setLeaderboardKey(prevKey => prevKey + 1);
+        } catch (error) {
+            console.error('Failed to submit score:', error);
+        }
+    };
+
     return (
         <Dialog>
+            <UsernameModal isOpen={showUsernameModal} onSubmit={handleUsernameSubmit} />
             <div className="flex flex-wrap gap-6 justify-center w-5/6">
                 {solution.split(" ").map((word, wordIndex) => (
                     <div key={wordIndex} className="flex justify-center gap-1">
@@ -216,8 +272,8 @@ const PhraseDisplay = ({solution, revealed}: PhraseDisplayProps) => {
                             return (
                                 <Tile
                                     key={letterIndex}
-                                    guessedLetter={guessedLetter}
-                                    letter={letter}
+                                    guessedLetter={guessedLetter?.toUpperCase()}
+                                    letter={letter.toUpperCase()}
                                     isVisible={isRevealed}
                                     isSelected={isSelected}
                                     onClick={() => !isRevealed && handleTileClick(letter, letterIndex, wordIndex)}
@@ -250,6 +306,11 @@ const PhraseDisplay = ({solution, revealed}: PhraseDisplayProps) => {
                         setGuessedLetters([]);
                         setIsCorrect(null);
                         setEditMode(!editMode);
+                        if (!editMode) {
+                            // When entering edit mode, find and select first unrevealed tile
+                            const firstUnrevealed = findFirstUnrevealedTile(solution, revealedLetters);
+                            setSelectedTile(firstUnrevealed);
+                        }
                     }}
                     variant={"outline"}
                     className="bg-white text-black w-5/6"
@@ -270,16 +331,21 @@ const PhraseDisplay = ({solution, revealed}: PhraseDisplayProps) => {
             <DialogContent>
                 <DialogHeader className="text-center">
                     <DialogTitle>{isCorrect ? <span>Off to the races!</span> : <span>Neigh... Next time!</span>}</DialogTitle>
+                    {isCorrect && username && (
+                        <div className="mt-4 text-sm text-muted-foreground">
+                            <p>Reveals used: {reveals.filter(r => r.used).length}</p>
+                        </div>
+                    )}
                     <div className="flex flex-col items-center space-y-2 text-sm text-muted-foreground">
                         <div className="py-4 text-4xl">
                             {"🟩 ".repeat(reveals.length)}
                             {isCorrect ? "🦁" : "🤷"}
                         </div>
-                        <span className="text-black">
+                        <span>
                             {`You revealed ${reveals.filter(r => r.used).length} letters and ${isCorrect ? "guessed the puzzle correctly!" : "didn't quite get it this time."}`}
                         </span>
-                        <span className="text-md text-black">The answer is:</span>
-                        <div className="py-2 text-lg font-bold text-black">
+                        <span className="text-md">The answer is:</span>
+                        <div className="py-2 text-lg font-bold">
                             {solution}
                         </div>
                         <Popover>
@@ -303,6 +369,8 @@ const PhraseDisplay = ({solution, revealed}: PhraseDisplayProps) => {
             </DialogContent>
 
             {editMode && <ScreenKeyboard onKeyPress={handleKeyPress} />}
+            
+            <Leaderboard key={leaderboardKey} puzzleDate={puzzleDate} />
 
         </Dialog>
     );
