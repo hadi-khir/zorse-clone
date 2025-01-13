@@ -288,7 +288,7 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
 
             {!editMode && (<RevealDisplay tileSelected={selectedTile !== null} onRevealClick={handleRevealClick} reveals={reveals} />)}
 
-            <div id="guessPhraseBtn" className="w-2/6 grid grid-cols-1 justify-items-center gap-4">
+            <div id="guessPhraseBtn" className="w-4/6 grid grid-cols-1 justify-items-center gap-4">
                 {editMode &&
                     <DialogTrigger
                         className={cn(
@@ -316,7 +316,7 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
                             }
                         }}
                         variant={"outline"}
-                        className="bg-white text-black w-5/6"
+                        className="bg-white text-black w-full"
                     >
                         {!editMode ? <span>Enter a Phrase</span> : <span>Go Back</span>}
                     </Button>}

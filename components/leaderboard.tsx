@@ -34,7 +34,7 @@ const Leaderboard = ({ puzzleDate }: LeaderboardProps) => {
     if (loading) return <div>Loading leaderboard...</div>;
 
     return (
-        <div className="w-full max-w-md mx-auto mt-4">
+        <div className="w-11/12 max-w-md mx-auto mt-4">
             <h3 className="text-lg font-semibold mb-4">{`Today's Leaderboard`}</h3>
             <div className="rounded-lg shadow">
                 {entries.length === 0 ? (

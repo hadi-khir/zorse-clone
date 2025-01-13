@@ -14,7 +14,7 @@ export default async function Home() {
       <section id="title">
         <div className="flex mx-4 my-4 md:mx-32 md:mt-32 md:mb-4 justify-between items-center">
           <div className="flex gap-4">
-            <span className="font-bold text-3xl">Liger</span>
+            <span className="font-bold text-3xl">Liger 🦁</span>
             <DateDisplay />
           </div>
           <ModeToggle />
@@ -22,7 +22,7 @@ export default async function Home() {
         <hr />
       </section>
       <section id="game">
-        <div className="flex justify-center m-8 md:w-1/2 mx-auto">
+        <div className="flex justify-center m-8 w-11/12 md:w-1/2 mx-auto">
           <div className="grid grid-cols-1 gap-8 justify-items-center w-full">
             <span>Select a space to reveal letters.</span>
             <div className="bg-lime-200 text-center p-2 sm:w-full">
