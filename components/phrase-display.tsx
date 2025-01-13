@@ -53,6 +53,7 @@ const PhraseDisplay = ({solution, revealed, puzzleDate}: PhraseDisplayProps) => 
     const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
     const [username, setUsername] = useState<string | null>(null);
     const [showUsernameModal, setShowUsernameModal] = useState(true);
+    const [leaderboardKey, setLeaderboardKey] = useState<number>(0);
 
     const handleTileClick = (letter: string, letterIndex: number, wordIndex: number) => {
         setSelectedTile({
@@ -245,6 +246,8 @@ const PhraseDisplay = ({solution, revealed, puzzleDate}: PhraseDisplayProps) => 
                     puzzleDate: puzzleDate
                 }),
             });
+
+            setLeaderboardKey(prevKey => prevKey + 1);
         } catch (error) {
             console.error('Failed to submit score:', error);
         }
@@ -365,9 +368,9 @@ const PhraseDisplay = ({solution, revealed, puzzleDate}: PhraseDisplayProps) => 
                 </DialogHeader>
             </DialogContent>
 
-            <Leaderboard puzzleDate={puzzleDate} />
-
             {editMode && <ScreenKeyboard onKeyPress={handleKeyPress} />}
+            
+            <Leaderboard key={leaderboardKey} puzzleDate={puzzleDate} />
 
         </Dialog>
     );
