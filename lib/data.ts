@@ -2,6 +2,7 @@
 import prisma from './prisma';
 
 export interface PuzzleSolution {
+    title: string;
     solution: string;
     revealedLetters: string[];
     datePublished: Date;
@@ -16,13 +17,13 @@ export async function fetchPuzzleSolution(): Promise<PuzzleSolution> {
 
     const today = new Date(Date.UTC(adjustedDate.getUTCFullYear(), adjustedDate.getUTCMonth(), adjustedDate.getUTCDate()));
 
-    console.log(today);
 
     const puzzle = await prisma.liger_Puzzle.findFirst({
         where: {
             datePublished: today
         },
         select: {
+            title: true,
             solution: true,
             revealedLetters: true,
             datePublished: true

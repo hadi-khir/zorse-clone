@@ -14,7 +14,7 @@ export default async function Home() {
       <section id="title">
         <div className="flex mx-4 my-4 md:mx-32 md:mt-32 md:mb-4 justify-between items-center">
           <div className="flex gap-4">
-            <span className="font-bold text-3xl">Zorse</span>
+            <span className="font-bold text-3xl">Liger</span>
             <DateDisplay />
           </div>
           <ModeToggle />
@@ -26,7 +26,7 @@ export default async function Home() {
           <div className="grid grid-cols-1 gap-8 justify-items-center">
             <span>Select a space to reveal letters.</span>
             <div className="bg-lime-200 text-center p-2 w-5/6">
-              <span className="text-2xl text-bold dark:text-black">SUCCESSFULLY KICK YOUR HANGOVERS BUTT</span>
+              <span className="text-2xl text-bold dark:text-black">{data.title.toUpperCase()}</span>
             </div>
             <PhraseDisplay solution={data.solution} revealed={data.revealedLetters} puzzleDate={data.datePublished} />
           </div>
