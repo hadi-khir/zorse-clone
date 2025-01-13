@@ -17,6 +17,8 @@ export async function fetchPuzzleSolution(): Promise<PuzzleSolution> {
 
     const today = new Date(Date.UTC(adjustedDate.getUTCFullYear(), adjustedDate.getUTCMonth(), adjustedDate.getUTCDate()));
 
+    // log the date of today's puzzle to the console
+    console.log('Today is: ', today);
 
     const puzzle = await prisma.liger_Puzzle.findFirst({
         where: {
@@ -29,6 +31,9 @@ export async function fetchPuzzleSolution(): Promise<PuzzleSolution> {
             datePublished: true
         }
     });
+
+    // log the puzzle title for the day to the console
+    console.log('Today\'s puzzle is: ', puzzle.title);
 
     if (!puzzle) {
         throw new Error('No puzzle found for today');
