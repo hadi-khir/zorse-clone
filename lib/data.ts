@@ -33,7 +33,7 @@ export async function fetchPuzzleSolution(): Promise<PuzzleSolution> {
     });
 
     // log the puzzle title for the day to the console
-    console.log('Today\'s puzzle is: ', puzzle.title);
+    console.log('Today\'s puzzle is: ', puzzle?.title);
 
     if (!puzzle) {
         throw new Error('No puzzle found for today');
