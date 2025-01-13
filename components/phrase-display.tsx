@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Tile from "./tile";
 import RevealDisplay from "./reveal-display";
 import { Button, buttonVariants } from "./ui/button";
@@ -193,6 +193,7 @@ const PhraseDisplay = ({solution, revealed, puzzleDate}: PhraseDisplayProps) => 
         });
 
         setIsCorrect(allCorrect);
+        submitScore(allCorrect);
     };
 
     const isAllTilesFilled = () => {
@@ -226,11 +227,10 @@ const PhraseDisplay = ({solution, revealed, puzzleDate}: PhraseDisplayProps) => 
         setShowUsernameModal(false);
     };
 
-    const submitScore = async () => {
-        if (!username || !isCorrect) return;
+    const submitScore = async (solved: boolean) => {
+        if (!username) return;
 
         const revealsUsed = reveals.filter(r => r.used).length;
-
         
         try {
             await fetch('/api/leaderboard', {
@@ -241,7 +241,7 @@ const PhraseDisplay = ({solution, revealed, puzzleDate}: PhraseDisplayProps) => 
                 body: JSON.stringify({
                     username,
                     reveals: revealsUsed,
-                    solved: isCorrect,
+                    solved: solved,
                     puzzleDate: puzzleDate
                 }),
             });
@@ -249,12 +249,6 @@ const PhraseDisplay = ({solution, revealed, puzzleDate}: PhraseDisplayProps) => 
             console.error('Failed to submit score:', error);
         }
     };
-
-    useEffect(() => {
-        if (isCorrect) {
-            submitScore();
-        }
-    }, [isCorrect]);
 
     return (
         <Dialog>

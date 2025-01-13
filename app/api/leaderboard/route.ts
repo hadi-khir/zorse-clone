@@ -16,6 +16,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(entry)
   } catch (error) {
+    console.error('Failed to save score:', error);
     return NextResponse.json({ error: "Failed to save score" }, { status: 500 })
   }
 }
