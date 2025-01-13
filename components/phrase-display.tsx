@@ -43,7 +43,7 @@ const initialReveals: Reveals[] = Array.from({ length: 5 }, (_, i) => ({
     used: false
 }));
 
-const PhraseDisplay = ({solution, revealed, puzzleDate}: PhraseDisplayProps) => {
+const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) => {
 
     const [revealedLetters, setRevealedLetters] = useState<string[]>(revealed);
     const [selectedTile, setSelectedTile] = useState<SelectedTile | null>(null);
@@ -51,6 +51,7 @@ const PhraseDisplay = ({solution, revealed, puzzleDate}: PhraseDisplayProps) => 
     const [editMode, setEditMode] = useState<boolean>(false);
     const [guessedLetters, setGuessedLetters] = useState<GuessedLetter[]>([]);
     const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+    const [submitted, setSubmitted] = useState<boolean>(false);
     const [username, setUsername] = useState<string | null>(null);
     const [showUsernameModal, setShowUsernameModal] = useState(true);
     const [leaderboardKey, setLeaderboardKey] = useState<number>(0);
@@ -122,7 +123,7 @@ const PhraseDisplay = ({solution, revealed, puzzleDate}: PhraseDisplayProps) => 
 
     const findFirstUnrevealedTile = (solution: string, revealedLetters: string[]): SelectedTile | null => {
         const words = solution.split(" ");
-        
+
         for (let wordIndex = 0; wordIndex < words.length; wordIndex++) {
             for (let letterIndex = 0; letterIndex < words[wordIndex].length; letterIndex++) {
                 const letter = words[wordIndex][letterIndex];
@@ -232,7 +233,7 @@ const PhraseDisplay = ({solution, revealed, puzzleDate}: PhraseDisplayProps) => 
         if (!username) return;
 
         const revealsUsed = reveals.filter(r => r.used).length;
-        
+
         try {
             await fetch('/api/leaderboard', {
                 method: 'POST',
@@ -248,6 +249,7 @@ const PhraseDisplay = ({solution, revealed, puzzleDate}: PhraseDisplayProps) => 
             });
 
             setLeaderboardKey(prevKey => prevKey + 1);
+            setSubmitted(true);
         } catch (error) {
             console.error('Failed to submit score:', error);
         }
@@ -301,29 +303,30 @@ const PhraseDisplay = ({solution, revealed, puzzleDate}: PhraseDisplayProps) => 
                     >
                         <span>Submit Final Phrase</span>
                     </DialogTrigger>}
-                <Button
-                    onClick={() => {
-                        setGuessedLetters([]);
-                        setIsCorrect(null);
-                        setEditMode(!editMode);
-                        if (!editMode) {
-                            // When entering edit mode, find and select first unrevealed tile
-                            const firstUnrevealed = findFirstUnrevealedTile(solution, revealedLetters);
-                            setSelectedTile(firstUnrevealed);
-                        }
-                    }}
-                    variant={"outline"}
-                    className="bg-white text-black w-5/6"
-                >
-                    {!editMode ? <span>Enter a Phrase</span> : <span>Go Back</span>}
-                </Button>
+                {!submitted &&
+                    <Button
+                        onClick={() => {
+                            setGuessedLetters([]);
+                            setIsCorrect(null);
+                            setEditMode(!editMode);
+                            if (!editMode) {
+                                // When entering edit mode, find and select first unrevealed tile
+                                const firstUnrevealed = findFirstUnrevealedTile(solution, revealedLetters);
+                                setSelectedTile(firstUnrevealed);
+                            }
+                        }}
+                        variant={"outline"}
+                        className="bg-white text-black w-5/6"
+                    >
+                        {!editMode ? <span>Enter a Phrase</span> : <span>Go Back</span>}
+                    </Button>}
             </div>
 
             {isCorrect !== null && !editMode && (
                 <div className={`text-center p-2 rounded-md ${isCorrect ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}`}>
                     {isCorrect ?
                         "Congratulations! You solved it!" :
-                        "Not quite right. Try again!"
+                        "Not quite right. Better luck next time!"
                     }
                 </div>
             )}
@@ -369,7 +372,7 @@ const PhraseDisplay = ({solution, revealed, puzzleDate}: PhraseDisplayProps) => 
             </DialogContent>
 
             {editMode && <ScreenKeyboard onKeyPress={handleKeyPress} />}
-            
+
             <Leaderboard key={leaderboardKey} puzzleDate={puzzleDate} />
 
         </Dialog>
