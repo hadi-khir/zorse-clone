@@ -1,11 +1,19 @@
+import { getEstDate } from "@/lib/utils";
+
 const DateDisplay = () => {
 
     const formatDate = (date: Date): string => {
+    
+        const estDate = getEstDate(date);
+        const options: Intl.DateTimeFormatOptions = { 
+            month: 'long', 
+            day: 'numeric', 
+            year: 'numeric',
+            timeZone: 'America/New_York'
+        };
+        const formattedDate = new Intl.DateTimeFormat('en-US', options).format(estDate);
 
-        const options: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric', year: 'numeric' };
-        const formattedDate = new Intl.DateTimeFormat('en-US', options).format(date);
-
-        const day = date.getDate();
+        const day = estDate.getDate();
         const suffix =
             day % 10 === 1 && day != 11
                 ? 'st'
