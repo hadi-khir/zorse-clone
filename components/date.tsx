@@ -1,11 +1,20 @@
 const DateDisplay = () => {
 
     const formatDate = (date: Date): string => {
+        // Convert to EST
+        const estDate = new Date(date.toLocaleString('en-US', {
+            timeZone: 'America/New_York'
+        }));
 
-        const options: Intl.DateTimeFormatOptions = { month: 'long', day: 'numeric', year: 'numeric' };
-        const formattedDate = new Intl.DateTimeFormat('en-US', options).format(date);
+        const options: Intl.DateTimeFormatOptions = { 
+            month: 'long', 
+            day: 'numeric', 
+            year: 'numeric',
+            timeZone: 'America/New_York'
+        };
+        const formattedDate = new Intl.DateTimeFormat('en-US', options).format(estDate);
 
-        const day = date.getDate();
+        const day = estDate.getDate();
         const suffix =
             day % 10 === 1 && day != 11
                 ? 'st'
