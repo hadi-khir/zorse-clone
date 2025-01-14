@@ -298,7 +298,7 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
                     </Button>}
             </div>
 
-            <span className="text-center text-2xl font-bold">Goodluck, {username}! ☘️</span>
+            {!submitted && <span className="text-center text-2xl font-bold">Goodluck, {username}! ☘️</span>}
 
             {submitted && !editMode && (
                 <>
