@@ -11,7 +11,7 @@ interface PhraseGridProps {
 const PhraseGrid = ({solution, revealedLetters, selectedTile, guessedLetters, handleTileClick}: PhraseGridProps) => {
 
     return (
-        <div className="flex flex-wrap gap-6 justify-center w-5/6">
+        <div className="flex flex-wrap gap-4 justify-center w-5/6">
             {solution.split(" ").map((word, wordIndex) => (
                 <div key={wordIndex} className="flex justify-center gap-1">
                     {word.split("").map((letter, letterIndex) => {
