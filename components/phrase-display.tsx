@@ -1,21 +1,14 @@
 "use client"
 
 import { useState } from "react";
-import Tile from "./tile";
 import RevealDisplay from "./reveal-display";
 import { Button, buttonVariants } from "./ui/button";
 import ScreenKeyboard from "./screen-keyboard";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
+import { Dialog, DialogTrigger } from "./ui/dialog";
 import { cn } from "@/lib/utils";
 import { UsernameModal } from "./username-modal";
 import Leaderboard from "./leaderboard";
 import PhraseGrid from "./phrase-grid";
-import { Share } from "next/font/google";
 import ShareResults from "./share-results";
 import ResultsModal from "./results-modal";
 
