@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog"
 import { Button } from "./ui/button"
 import { Input } from "./ui/input"
@@ -14,6 +14,15 @@ interface UsernameModalProps {
 export function UsernameModal({ isOpen, onSubmit }: UsernameModalProps) {
   const [username, setUsername] = useState("")
   const [error, setError] = useState("")
+  const [showModal, setShowModal] = useState(isOpen)
+
+  useEffect(() => {
+    const savedUsername = localStorage.getItem("username")
+    if (savedUsername) {
+      onSubmit(savedUsername)
+      setShowModal(false)
+    }
+  }, [onSubmit])
 
   const containsBannedWord = (input: string) => {
     return banned.some((word) =>
@@ -29,12 +38,14 @@ export function UsernameModal({ isOpen, onSubmit }: UsernameModalProps) {
     }
     if (username.trim()) {
       setError("") // Clear error if input is valid
+      localStorage.setItem("username", username.trim()) // Save username to localStorage
       onSubmit(username.trim())
+      setShowModal(false) // Hide the modal
     }
   }
 
   return (
-    <Dialog open={isOpen}>
+    <Dialog open={showModal}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Enter Your Username</DialogTitle>
