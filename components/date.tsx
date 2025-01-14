@@ -1,11 +1,10 @@
+import { getEstDate } from "@/lib/utils";
+
 const DateDisplay = () => {
 
     const formatDate = (date: Date): string => {
-        // Convert to EST
-        const estDate = new Date(date.toLocaleString('en-US', {
-            timeZone: 'America/New_York'
-        }));
-
+    
+        const estDate = getEstDate(date);
         const options: Intl.DateTimeFormatOptions = { 
             month: 'long', 
             day: 'numeric', 
