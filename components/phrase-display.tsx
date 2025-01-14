@@ -1,19 +1,16 @@
 "use client"
 
 import { useState } from "react";
-import Tile from "./tile";
 import RevealDisplay from "./reveal-display";
 import { Button, buttonVariants } from "./ui/button";
 import ScreenKeyboard from "./screen-keyboard";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
+import { Dialog, DialogTrigger } from "./ui/dialog";
 import { cn } from "@/lib/utils";
 import { UsernameModal } from "./username-modal";
 import Leaderboard from "./leaderboard";
+import PhraseGrid from "./phrase-grid";
+import ShareResults from "./share-results";
+import ResultsModal from "./results-modal";
 
 interface SelectedTile {
     letter: string;
@@ -258,33 +255,12 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
     return (
         <Dialog>
             <UsernameModal isOpen={showUsernameModal} onSubmit={handleUsernameSubmit} />
-            <div className="flex flex-wrap gap-6 justify-center w-5/6">
-                {solution.split(" ").map((word, wordIndex) => (
-                    <div key={wordIndex} className="flex justify-center gap-1">
-                        {word.split("").map((letter, letterIndex) => {
-                            const isRevealed = revealedLetters.includes(letter.toUpperCase());
-                            const isSelected = !isRevealed &&
-                                selectedTile?.letterIndex === letterIndex &&
-                                selectedTile?.wordIndex === wordIndex;
-                            const guessedLetter = guessedLetters.find(
-                                guess => guess.letterIndex === letterIndex &&
-                                    guess.wordIndex === wordIndex
-                            )?.letter;
-
-                            return (
-                                <Tile
-                                    key={letterIndex}
-                                    guessedLetter={guessedLetter?.toUpperCase()}
-                                    letter={letter.toUpperCase()}
-                                    isVisible={isRevealed}
-                                    isSelected={isSelected}
-                                    onClick={() => !isRevealed && handleTileClick(letter, letterIndex, wordIndex)}
-                                />
-                            );
-                        })}
-                    </div>
-                ))}
-            </div>
+            <PhraseGrid
+                solution={solution}
+                revealedLetters={revealedLetters}
+                selectedTile={selectedTile}
+                guessedLetters={guessedLetters}
+                handleTileClick={handleTileClick} />
 
             {!editMode && (<RevealDisplay tileSelected={selectedTile !== null} onRevealClick={handleRevealClick} reveals={reveals} />)}
 
@@ -322,7 +298,7 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
                     </Button>}
             </div>
 
-            {isCorrect !== null && !editMode && (
+            {submitted && !editMode && (
                 <>
 
                     <div className={`text-center p-2 rounded-md ${isCorrect ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}`}>
@@ -332,64 +308,11 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
                         }
                     </div>
 
-                    <Popover>
-                        <PopoverTrigger
-                            className={cn(
-                                buttonVariants({ variant: "outline" }),
-                                "w-5/6 bg-black text-white"
-                            )}
-                            onClick={() => {
-                                const revealEmojis = "🟩".repeat(reveals.length);
-                                const resultEmoji = isCorrect ? "🦁" : "🤷";
-                                navigator.clipboard.writeText(`Liger Results\n${revealEmojis}${resultEmoji}`);
-                            }}
-                        >
-                            Share Results
-                        </PopoverTrigger>
-                        <PopoverContent>Results copied to clipboard!</PopoverContent>
-                    </Popover>
+                    <ShareResults date={puzzleDate} reveals={reveals} isCorrect={isCorrect} />
                 </>
             )}
 
-            <DialogContent>
-                <DialogHeader className="text-center">
-                    <DialogTitle>{isCorrect ? <span>Off to the races!</span> : <span>Neigh... Next time!</span>}</DialogTitle>
-                    {isCorrect && username && (
-                        <div className="mt-4 text-sm text-muted-foreground">
-                            <p>Reveals used: {reveals.filter(r => r.used).length}</p>
-                        </div>
-                    )}
-                    <div className="flex flex-col items-center space-y-2 text-sm text-muted-foreground">
-                        <div className="py-4 text-4xl">
-                            {"🟩 ".repeat(reveals.length)}
-                            {isCorrect ? "🦁" : "🤷"}
-                        </div>
-                        <span>
-                            {`You revealed ${reveals.filter(r => r.used).length} letters and ${isCorrect ? "guessed the puzzle correctly!" : "didn't quite get it this time."}`}
-                        </span>
-                        <span className="text-md">The answer is:</span>
-                        <div className="py-2 text-lg font-bold">
-                            {solution}
-                        </div>
-                        <Popover>
-                            <PopoverTrigger
-                                className={cn(
-                                    buttonVariants({ variant: "outline" }),
-                                    "w-full bg-black text-white"
-                                )}
-                                onClick={() => {
-                                    const revealEmojis = "🟩".repeat(reveals.length);
-                                    const resultEmoji = isCorrect ? "🦁" : "🤷";
-                                    navigator.clipboard.writeText(`Liger Results\n${revealEmojis}${resultEmoji}`);
-                                }}
-                            >
-                                Share Results
-                            </PopoverTrigger>
-                            <PopoverContent>Results copied to clipboard!</PopoverContent>
-                        </Popover>
-                    </div>
-                </DialogHeader>
-            </DialogContent>
+            <ResultsModal puzzleDate={puzzleDate} isCorrect={isCorrect} solution={solution} reveals={reveals} username={username} />
 
             {editMode && <ScreenKeyboard onKeyPress={handleKeyPress} />}
 
