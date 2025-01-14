@@ -9,26 +9,27 @@ interface ShareResultsProps {
     isCorrect: boolean | null;
 }
 
-const ShareResults = ({date, reveals, isCorrect}: ShareResultsProps) => {
+const ShareResults = ({ date, reveals, isCorrect }: ShareResultsProps) => {
 
     return (
 
         <Popover>
-        <PopoverTrigger
-            className={cn(
-                buttonVariants({ variant: "outline" }),
-                "w-5/6 bg-black text-white"
-            )}
-            onClick={() => {
-                const revealEmojis = "🔍".repeat(reveals.filter(reveal => reveal.used).length);
-                const resultEmoji = isCorrect ? "🦁" : "🤷";
-                navigator.clipboard.writeText(`${date.toDateString()}\nLiger Results\n${revealEmojis}${resultEmoji}`);
-            }}
-        >
-            Share Results
-        </PopoverTrigger>
-        <PopoverContent>Results copied to clipboard!</PopoverContent>
-    </Popover>
+            <PopoverTrigger
+                aria-label="Share your game results"
+                className={cn(
+                    buttonVariants({ variant: "outline" }),
+                    "w-5/6 bg-black text-white"
+                )}
+                onClick={() => {
+                    const revealEmojis = "🔍".repeat(reveals.filter(reveal => reveal.used).length);
+                    const resultEmoji = isCorrect ? "🦁" : "🤷";
+                    navigator.clipboard.writeText(`${date.toDateString()}\nLiger Results\n${revealEmojis}${resultEmoji}`);
+                }}
+            >
+                Share Results
+            </PopoverTrigger>
+            <PopoverContent>Results copied to clipboard!</PopoverContent>
+        </Popover>
     )
 }
 

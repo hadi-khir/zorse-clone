@@ -1,6 +1,6 @@
 import Tile from "./tile";
 
-interface PhraseGrideProps {
+interface PhraseGridProps {
     solution: string;
     revealedLetters: string[];
     selectedTile: { letterIndex: number, wordIndex: number } | null;
@@ -8,7 +8,7 @@ interface PhraseGrideProps {
     handleTileClick: (letter: string, letterIndex: number, wordIndex: number) => void;
 }
 
-const PhraseGrid = ({solution, revealedLetters, selectedTile, guessedLetters, handleTileClick}: PhraseGrideProps) => {
+const PhraseGrid = ({solution, revealedLetters, selectedTile, guessedLetters, handleTileClick}: PhraseGridProps) => {
 
     return (
         <div className="flex flex-wrap gap-6 justify-center w-5/6">

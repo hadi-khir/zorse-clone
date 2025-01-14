@@ -9,12 +9,14 @@ interface ResultsModalProps {
     username: string | null;
 }
 
-const ResultsModal = ({puzzleDate, isCorrect, solution, reveals, username}: ResultsModalProps) => {
+const ResultsModal = ({ puzzleDate, isCorrect, solution, reveals, username }: ResultsModalProps) => {
 
     return (
         <DialogContent>
             <DialogHeader className="text-center">
-                <DialogTitle>{isCorrect ? <span>Off to the races!</span> : <span>Neigh... Next time!</span>}</DialogTitle>
+                <DialogTitle aria-label={isCorrect ? "Congratulations! You won!" : "Better luck next time!"}>
+                    {isCorrect ? "Off to the races!" : "Neigh... Next time!"}
+                </DialogTitle>
                 {isCorrect && username && (
                     <div className="mt-4 text-sm text-muted-foreground">
                         <p>Reveals used: {reveals.filter(r => r.used).length}</p>
