@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import RevealDisplay from "./reveal-display";
 import { Button, buttonVariants } from "./ui/button";
 import ScreenKeyboard from "./screen-keyboard";
@@ -11,6 +11,8 @@ import Leaderboard from "./leaderboard";
 import PhraseGrid from "./phrase-grid";
 import ShareResults from "./share-results";
 import ResultsModal from "./results-modal";
+
+import confetti from 'canvas-confetti';
 
 interface SelectedTile {
     letter: string;
@@ -52,6 +54,17 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
     const [username, setUsername] = useState<string | null>(null);
     const [showUsernameModal, setShowUsernameModal] = useState(true);
     const [leaderboardKey, setLeaderboardKey] = useState<number>(0);
+
+    // Run confetti effect only when isCorrect changes to true
+    useEffect(() => {
+        if (isCorrect) {
+            confetti({
+                particleCount: 400,
+                spread: 150,
+                origin: { y: 0.6 },
+            });
+        }
+    }, [isCorrect]);
 
     const handleTileClick = (letter: string, letterIndex: number, wordIndex: number) => {
         setSelectedTile({
