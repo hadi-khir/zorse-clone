@@ -23,7 +23,8 @@ const ShareResults = ({ date, reveals, isCorrect }: ShareResultsProps) => {
                 onClick={() => {
                     const revealEmojis = "🔍".repeat(reveals.filter(reveal => reveal.used).length);
                     const resultEmoji = isCorrect ? "🦁" : "🤷";
-                    navigator.clipboard.writeText(`${date.toDateString()}\nLiger Results\n${revealEmojis}${resultEmoji}`);
+                    const dateString = date.toUTCString().split(' ').slice(0, 4).join(' ');
+                    navigator.clipboard.writeText(`${dateString}\nLiger Results\n${revealEmojis}${resultEmoji}`);
                 }}
             >
                 Share Results
