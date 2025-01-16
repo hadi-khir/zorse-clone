@@ -47,9 +47,9 @@ const Leaderboard = ({ puzzleDate }: LeaderboardProps) => {
                             .sort((a, b) => a.reveals - b.reveals)
                             .map((entry, index) => (
                                 <div key={index} className="flex justify-between p-4">
-                                    <span className="font-medium">{entry.username}</span>
-                                    <span>{entry.solved ? "Solved" : "Not Solved"}</span>
-                                    <span>{entry.reveals} reveals</span>
+                                    <span className="font-medium w-2/6">{entry.username}</span>
+                                    <span className='w-2/6'>{entry.solved ? "✅" : "❌"}</span>
+                                    <span className='w-2/6'>{entry.reveals} reveals</span>
                                 </div>
                             ))}
                     </div>
