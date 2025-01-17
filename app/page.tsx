@@ -1,13 +1,15 @@
 
 import DateDisplay from "@/components/date";
+import Leaderboard from "@/components/leaderboard";
 import { ModeToggle } from "@/components/mode-toggle";
 import PhraseDisplay from "@/components/phrase-display";
-import { fetchPuzzleSolution, PuzzleSolution } from "@/lib/data";
+import { fetchLeaderboard, fetchPuzzleSolution, LeaderboardEntry, PuzzleSolution } from "@/lib/data";
 
 export default async function Home() {
 
 
-  const data: PuzzleSolution = await fetchPuzzleSolution();
+  const puzzleData: PuzzleSolution = await fetchPuzzleSolution();
+  const leaderboardData: LeaderboardEntry[] = await fetchLeaderboard(puzzleData.datePublished);
   
   return (
     <main>
@@ -26,11 +28,12 @@ export default async function Home() {
           <div className="grid grid-cols-1 gap-8 justify-items-center w-full">
             <span>Select a space to reveal letters.</span>
             <div className="bg-lime-200 text-center p-2 sm:w-full">
-              <span className="text-2xl text-bold dark:text-black">{data.title.toUpperCase()}</span>
+              <span className="text-2xl text-bold dark:text-black">{puzzleData.title.toUpperCase()}</span>
             </div>
-            <PhraseDisplay solution={data.solution} revealed={data.revealedLetters} puzzleDate={data.datePublished} />
+            <PhraseDisplay solution={puzzleData.solution} revealed={puzzleData.revealedLetters} puzzleDate={puzzleData.datePublished} />
           </div>
         </div>
+        <Leaderboard leaderboardData={leaderboardData} />
       </section>
     </main>
   );

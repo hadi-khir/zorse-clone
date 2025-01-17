@@ -7,12 +7,12 @@ import ScreenKeyboard from "./screen-keyboard";
 import { Dialog, DialogTrigger } from "./ui/dialog";
 import { cn } from "@/lib/utils";
 import { UsernameModal } from "./username-modal";
-import Leaderboard from "./leaderboard";
 import PhraseGrid from "./phrase-grid";
 import ShareResults from "./share-results";
 import ResultsModal from "./results-modal";
 
 import confetti from 'canvas-confetti';
+import { submitScore } from "@/lib/data";
 
 interface SelectedTile {
     letter: string;
@@ -53,7 +53,6 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
     const [submitted, setSubmitted] = useState<boolean>(false);
     const [username, setUsername] = useState<string | null>(null);
     const [showUsernameModal, setShowUsernameModal] = useState(true);
-    const [leaderboardKey, setLeaderboardKey] = useState<number>(0);
 
     // Run confetti effect only when isCorrect changes to true
     useEffect(() => {
@@ -205,7 +204,7 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
         });
 
         setIsCorrect(allCorrect);
-        submitScore(allCorrect);
+        submitScoreHandler(allCorrect);
     };
 
     const isAllTilesFilled = () => {
@@ -239,27 +238,24 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
         setShowUsernameModal(false);
     };
 
-    const submitScore = async (solved: boolean) => {
+    const submitScoreHandler = async (solved: boolean) => {
         if (!username) return;
 
         const revealsUsed = reveals.filter(r => r.used).length;
 
         try {
-            await fetch('/api/leaderboard', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    username,
-                    reveals: revealsUsed,
-                    solved: solved,
-                    puzzleDate: puzzleDate
-                }),
+            const result = await submitScore({
+                username,
+                reveals: revealsUsed,
+                solved,
+                puzzleDate,
             });
-
-            setLeaderboardKey(prevKey => prevKey + 1);
-            setSubmitted(true);
+    
+            if (result.success) {
+                setSubmitted(true);
+            } else {
+                console.error('Error submitting score:', result.error);
+            }
         } catch (error) {
             console.error('Failed to submit score:', error);
         }
@@ -330,8 +326,6 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
             <ResultsModal puzzleDate={puzzleDate} isCorrect={isCorrect} solution={solution} reveals={reveals} username={username} />
 
             {editMode && <ScreenKeyboard onKeyPress={handleKeyPress} />}
-
-            <Leaderboard key={leaderboardKey} puzzleDate={puzzleDate} />
 
         </Dialog>
     );
