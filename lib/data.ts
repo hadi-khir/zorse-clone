@@ -1,5 +1,7 @@
 
-import { unstable_noStore } from 'next/cache';
+"use server"
+
+import { revalidatePath, unstable_noStore } from 'next/cache';
 import prisma from './prisma';
 
 export interface PuzzleSolution {
@@ -7,6 +9,13 @@ export interface PuzzleSolution {
     solution: string;
     revealedLetters: string[];
     datePublished: Date;
+}
+
+export interface LeaderboardEntry {
+    username: string;
+    reveals: number;
+    solved: boolean;
+    puzzleDate: Date;
 }
 
 export async function fetchPuzzleSolution(): Promise<PuzzleSolution> {
@@ -37,4 +46,85 @@ export async function fetchPuzzleSolution(): Promise<PuzzleSolution> {
     }
 
     return puzzle;
+}
+
+export async function fetchLeaderboard(puzzleDate: Date): Promise<LeaderboardEntry[]> {
+
+    unstable_noStore();
+
+    if (!puzzleDate) {
+        throw new Error('Date parameter is required');
+    }
+
+    const leaderboard = await prisma.liger_Leaderboard.findMany({
+        where: {
+            puzzleDate: {
+                equals: puzzleDate
+            }
+        },
+        select: {
+            username: true,
+            reveals: true,
+            solved: true,
+            puzzleDate: true
+        },
+        orderBy: [
+            {
+                solved: 'desc'
+            },
+            {
+                reveals: 'asc'
+            }
+        ]
+    });
+
+    if (leaderboard.length === 0) {
+        throw new Error('No leaderboard entries found');
+    }
+
+    return leaderboard;
+}
+
+export async function submitScore({
+    username,
+    reveals,
+    solved,
+    puzzleDate,
+}: {
+    username: string;
+    reveals: number;
+    solved: boolean;
+    puzzleDate: Date;
+}) {
+
+    if (!username) {
+        throw new Error('Username is required.');
+    }
+    if (reveals === undefined || reveals === null) {
+        throw new Error('Reveals count is required.');
+    }
+    if (solved === undefined || solved === null) {
+        throw new Error('Solved status is required.');
+    }
+    if (!puzzleDate) {
+        throw new Error('Puzzle date is required.');
+    }
+
+    try {
+        await prisma.liger_Leaderboard.create({
+            data: {
+                username,
+                reveals,
+                solved,
+                puzzleDate,
+            },
+        });
+
+        // Revalidate the leaderboard so the UI updates without a refresh
+        revalidatePath('/');
+        return { success: true };
+    } catch (error) {
+        console.error('Failed to submit score:', error);
+        return { success: false, error: 'Failed to submit score' };
+    }
 }
