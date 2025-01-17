@@ -78,7 +78,7 @@ export async function fetchLeaderboard(puzzleDate: Date): Promise<LeaderboardEnt
         ]
     });
 
-    if (!leaderboard) {
+    if (leaderboard.length === 0) {
         throw new Error('No leaderboard entries found');
     }
 
@@ -96,8 +96,18 @@ export async function submitScore({
     solved: boolean;
     puzzleDate: Date;
 }) {
+
     if (!username) {
         throw new Error('Username is required.');
+    }
+    if (reveals === undefined || reveals === null) {
+        throw new Error('Reveals count is required.');
+    }
+    if (solved === undefined || solved === null) {
+        throw new Error('Solved status is required.');
+    }
+    if (!puzzleDate) {
+        throw new Error('Puzzle date is required.');
     }
 
     try {
@@ -111,7 +121,7 @@ export async function submitScore({
         });
 
         // Revalidate the leaderboard so the UI updates without a refresh
-        revalidatePath('/'); 
+        revalidatePath('/');
         return { success: true };
     } catch (error) {
         console.error('Failed to submit score:', error);

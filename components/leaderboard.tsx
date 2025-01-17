@@ -19,7 +19,6 @@ const Leaderboard = ({ leaderboardData }: LeaderboardProps) => {
                 ) : (
                     <div className="divide-y">
                         {leaderboardData
-                            .sort((a, b) => a.reveals - b.reveals)
                             .map((entry, index) => (
                                 <div key={index} className="flex justify-between p-4">
                                     <span className="font-medium w-2/6">{entry.username}</span>
