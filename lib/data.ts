@@ -78,10 +78,6 @@ export async function fetchLeaderboard(puzzleDate: Date): Promise<LeaderboardEnt
         ]
     });
 
-    if (leaderboard.length === 0) {
-        throw new Error('No leaderboard entries found');
-    }
-
     return leaderboard;
 }
 
