@@ -15,7 +15,8 @@ const PhraseGrid = ({solution, revealedLetters, selectedTile, guessedLetters, ha
             {solution.split(" ").map((word, wordIndex) => (
                 <div key={wordIndex} className="flex justify-center gap-1">
                     {word.split("").map((letter, letterIndex) => {
-                        const isRevealed = revealedLetters.includes(letter.toUpperCase());
+                        const isAlphabetic = /^[a-zA-Z]$/.test(letter);
+                        const isRevealed = !isAlphabetic || revealedLetters.includes(letter.toUpperCase());
                         const isSelected = !isRevealed &&
                             selectedTile?.letterIndex === letterIndex &&
                             selectedTile?.wordIndex === wordIndex;
@@ -27,6 +28,7 @@ const PhraseGrid = ({solution, revealedLetters, selectedTile, guessedLetters, ha
                         return (
                             <Tile
                                 key={letterIndex}
+                                isAlphabetic={isAlphabetic}
                                 guessedLetter={guessedLetter?.toUpperCase()}
                                 letter={letter.toUpperCase()}
                                 isVisible={isRevealed}
