@@ -95,6 +95,10 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
         }
     }
 
+    const isAlphabetic = (char: string): boolean => {
+        return /^[A-Za-z]$/.test(char);
+    };
+
     const findNextAvailableTile = (
         currentTile: SelectedTile,
         solution: string,
@@ -112,8 +116,15 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
                 continue;
             }
 
-            // Check if the current position is revealed
             const letter = words[nextWordIndex][nextLetterIndex];
+
+            // Skip non-alphabetic characters
+            if (!isAlphabetic(letter)) {
+                nextLetterIndex++;
+                continue;
+            }
+
+            // Check if the current position is revealed
             if (!revealedLetters.includes(letter.toUpperCase())) {
                 // Found an unrevealed tile
                 return {
@@ -208,6 +219,8 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
     };
 
     const isAllTilesFilled = () => {
+
+        solution = solution.replace(/[^a-zA-Z ]/g, "");
         const words = solution.split(" ");
 
         // Check each position that isn't revealed
@@ -250,7 +263,7 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
                 solved,
                 puzzleDate,
             });
-    
+
             if (result.success) {
                 setSubmitted(true);
             } else {
