@@ -95,10 +95,6 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
         }
     }
 
-    const isAlphabetic = (char: string): boolean => {
-        return /^[A-Za-z]$/.test(char);
-    };
-
     const findNextAvailableTile = (
         currentTile: SelectedTile,
         solution: string,
@@ -109,36 +105,35 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
         let nextLetterIndex = currentTile.letterIndex + 1;
 
         while (nextWordIndex < words.length) {
-            // If we've reached the end of the current word
-            if (nextLetterIndex >= words[nextWordIndex].length) {
-                nextWordIndex++;
-                nextLetterIndex = 0;
-                continue;
-            }
+            const word = words[nextWordIndex];
 
-            const letter = words[nextWordIndex][nextLetterIndex];
+            while (nextLetterIndex < word.length) {
+                const letter = word[nextLetterIndex];
 
-            // Skip non-alphabetic characters
-            if (!isAlphabetic(letter)) {
+                // Skip non-alphabetic characters like hyphens & apostrophes
+                if (!/^[A-Za-z]$/.test(letter)) {
+                    nextLetterIndex++;
+                    continue;
+                }
+
+                // Check if this letter has already been revealed
+                if (!revealedLetters.includes(letter.toUpperCase())) {
+                    return {
+                        letter,
+                        letterIndex: nextLetterIndex,
+                        wordIndex: nextWordIndex
+                    };
+                }
+
                 nextLetterIndex++;
-                continue;
             }
 
-            // Check if the current position is revealed
-            if (!revealedLetters.includes(letter.toUpperCase())) {
-                // Found an unrevealed tile
-                return {
-                    letter,
-                    letterIndex: nextLetterIndex,
-                    wordIndex: nextWordIndex
-                };
-            }
-
-            nextLetterIndex++;
+            // Move to the next word
+            nextWordIndex++;
+            nextLetterIndex = 0;
         }
 
-        // If we get here, no more tiles are available
-        return null;
+        return null; // No available tile found
     };
 
     const findFirstUnrevealedTile = (solution: string, revealedLetters: string[]): SelectedTile | null => {
@@ -191,27 +186,46 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
     };
 
     const checkSolution = () => {
-        // Get all non-revealed positions
-        const words = solution.split(" ");
+        // Normalize apostrophes to prevent mismatch (straight vs curly apostrophe)
+        const normalizedSolution = solution
+            .replace(/'/g, "'") // Convert curly apostrophe to straight apostrophe
+            .split(/\s+/) // Split words properly
+            .map(word => word.replace(/[^A-Za-z']/g, "")) // Keep only letters & apostrophes
+            .filter(word => word.length > 0); // Remove empty words
+
         let allCorrect = true;
 
-        words.forEach((word, wordIndex) => {
-            word.split("").forEach((letter, letterIndex) => {
-                // Skip revealed letters
+        normalizedSolution.forEach((word, wordIndex) => {
+            let reconstructedWord = "";
+            const currentWord = solution.split(/\s+/)[wordIndex];
+
+            for (let letterIndex = 0; letterIndex < currentWord.length; letterIndex++) {
+                let letter = currentWord[letterIndex];
+
+                // Normalize any curly apostrophes to straight ones
+                if (letter === "'") letter = "'";
+
+                // If it's a non-alphabetic character (e.g., apostrophe), just add it
+                if (!/^[A-Za-z]$/.test(letter)) {
+                    reconstructedWord += letter;
+                    continue;
+                }
+
+                // If letter is revealed, use it
                 if (revealedLetters.includes(letter.toUpperCase())) {
-                    return;
+                    reconstructedWord += letter.toUpperCase();
+                } else {
+                    // Find guessed letter using the original letterIndex
+                    const guess = guessedLetters.find(
+                        g => g.wordIndex === wordIndex && g.letterIndex === letterIndex
+                    );
+                    reconstructedWord += guess ? guess.letter.toUpperCase() : "_";
                 }
+            }
 
-                // Find user's guess for this position
-                const guess = guessedLetters.find(
-                    g => g.wordIndex === wordIndex && g.letterIndex === letterIndex
-                );
-
-                // If no guess or incorrect guess, solution is wrong
-                if (!guess || guess.letter !== letter.toUpperCase()) {
-                    allCorrect = false;
-                }
-            });
+            if (reconstructedWord !== currentWord.toUpperCase()) {
+                allCorrect = false;
+            }
         });
 
         setIsCorrect(allCorrect);
@@ -219,32 +233,30 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
     };
 
     const isAllTilesFilled = () => {
-
-        solution = solution.replace(/[^a-zA-Z ]/g, "");
         const words = solution.split(" ");
 
-        // Check each position that isn't revealed
         for (let wordIndex = 0; wordIndex < words.length; wordIndex++) {
             const word = words[wordIndex];
+
             for (let letterIndex = 0; letterIndex < word.length; letterIndex++) {
                 const letter = word[letterIndex];
 
-                // Skip revealed letters
-                if (revealedLetters.includes(letter.toUpperCase())) {
-                    continue;
+                // Skip non-alphabetic characters (hyphens, apostrophes, punctuation)
+                if (!/^[A-Za-z]$/.test(letter)) continue;
+
+                // If this letter isn't revealed and hasn't been guessed, return false
+                if (!revealedLetters.includes(letter.toUpperCase()) &&
+                    !guessedLetters.some(
+                        guess => guess.wordIndex === wordIndex && guess.letterIndex === letterIndex
+                    )) {
+                    return false;
                 }
-
-                // Check if there's a guess for this position
-                const hasGuess = guessedLetters.some(
-                    guess => guess.wordIndex === wordIndex &&
-                        guess.letterIndex === letterIndex
-                );
-
-                if (!hasGuess) return false;
             }
         }
+
         return true;
     };
+
 
     const handleUsernameSubmit = (name: string) => {
         setUsername(name);
