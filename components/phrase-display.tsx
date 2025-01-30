@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import RevealDisplay from "./reveal-display";
 import { Button, buttonVariants } from "./ui/button";
 import ScreenKeyboard from "./screen-keyboard";
-import { Dialog, DialogTrigger } from "./ui/dialog";
+import { Dialog } from "./ui/dialog";
 import { cn } from "@/lib/utils";
 import { UsernameModal } from "./username-modal";
 import PhraseGrid from "./phrase-grid";
@@ -13,6 +13,7 @@ import ResultsModal from "./results-modal";
 
 import confetti from 'canvas-confetti';
 import { submitScore } from "@/lib/data";
+import ConfirmSubmission from "./confirm-submission";
 
 interface SelectedTile {
     letter: string;
@@ -53,6 +54,7 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
     const [submitted, setSubmitted] = useState<boolean>(false);
     const [username, setUsername] = useState<string | null>(null);
     const [showUsernameModal, setShowUsernameModal] = useState(true);
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
     // Run confetti effect only when isCorrect changes to true
     useEffect(() => {
@@ -286,6 +288,21 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
         }
     };
 
+    const getCurrentPhrase = () => {
+        return solution.split(" ").map((word, wordIndex) => {
+            return word.split("").map((letter, letterIndex) => {
+                if (!/^[A-Za-z]$/.test(letter)) return letter;
+                if (revealedLetters.includes(letter.toUpperCase())) {
+                    return letter.toUpperCase();
+                }
+                const guess = guessedLetters.find(
+                    g => g.wordIndex === wordIndex && g.letterIndex === letterIndex
+                );
+                return guess ? guess.letter : "_";
+            }).join("");
+        }).join(" ");
+    };
+
     return (
         <Dialog>
             <UsernameModal isOpen={showUsernameModal} onSubmit={handleUsernameSubmit} />
@@ -300,19 +317,16 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
 
             <div id="guessPhraseBtn" className="w-4/6 grid grid-cols-1 justify-items-center gap-4">
                 {editMode &&
-                    <DialogTrigger
+                    <Button
                         className={cn(
                             buttonVariants({ variant: "outline" }),
                             "w-full bg-black text-white"
                         )}
-                        onClick={() => {
-                            checkSolution();
-                            setEditMode(!editMode)
-                        }}
+                        onClick={() => setShowConfirmDialog(true)}
                         disabled={!isAllTilesFilled()}
                     >
                         <span>Submit Final Phrase</span>
-                    </DialogTrigger>}
+                    </Button>}
                 {!submitted &&
                     <Button
                         onClick={() => {
@@ -348,10 +362,26 @@ const PhraseDisplay = ({ solution, revealed, puzzleDate }: PhraseDisplayProps) =
                 </>
             )}
 
-            <ResultsModal puzzleDate={puzzleDate} isCorrect={isCorrect} solution={solution} reveals={reveals} username={username} />
-
             {editMode && <ScreenKeyboard onKeyPress={handleKeyPress} />}
 
+            <ResultsModal
+                puzzleDate={puzzleDate}
+                isCorrect={isCorrect}
+                solution={solution}
+                reveals={reveals}
+                username={username}
+            />
+
+            <ConfirmSubmission
+                isOpen={showConfirmDialog}
+                onConfirm={() => {
+                    setShowConfirmDialog(false);
+                    checkSolution();
+                    setEditMode(false);
+                }}
+                onCancel={() => setShowConfirmDialog(false)}
+                submittedPhrase={getCurrentPhrase()}
+            />
         </Dialog>
     );
 };
