@@ -3,9 +3,7 @@ import DateDisplay from "@/components/date";
 import Leaderboard from "@/components/leaderboard";
 import { ModeToggle } from "@/components/mode-toggle";
 import PhraseDisplay from "@/components/phrase-display";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { fetchLeaderboard, fetchPuzzleSolution, LeaderboardEntry, PuzzleSolution } from "@/lib/data";
-import { TriangleAlert } from "lucide-react";
 
 export default async function Home() {
 
